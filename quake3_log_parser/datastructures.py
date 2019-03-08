@@ -76,7 +76,7 @@ class Game():
 
     def print_summary(self):
         for table in self.stat_table.values():
-            print(table.player.name + " " + str(table.score))
+            print(table.player.name + " " + str(table.score) + " kills " + str(table.total_kills))
         print()
 
     def __str__(self):
