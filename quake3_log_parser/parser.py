@@ -52,13 +52,21 @@ def parse_lines(log_input):
     for game in games:
         game.print_summary()
 
+    return games
+
+
+def parse_str(game_str):
+    lines = game_str.split("\n")
+
+    return parse_lines(lines)
+
 
 def parse_log_file(file):
     with open(file, 'r') as f:
         contents = f.read()
         lines = contents.split("\n")
 
-    parse_lines(lines)
+    return parse_lines(lines)
 
 
 def main():
