@@ -65,6 +65,11 @@ class Game():
         self.add_player(Player(WORLDID, False))
 
     def add_player(self, player):
+        # This can happen when a player disconnects and then reconnects. How
+        # should we handle this?. Should we count them as new
+        # players?
+        if player.id in self.players:
+            return
         self.players[player.id] = player
         self.stat_table[player.id] = StatTable(player)
 
