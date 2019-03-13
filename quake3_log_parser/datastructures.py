@@ -31,6 +31,9 @@ class StatTable():
         self.score += 1
         self.__add_death_or_kill(other_player, self.kill_by_player, kill)
 
+    def add_score(self, score):
+        self.score = score
+
     def add_death(self, other_player, method):
         kill = Kill(other_player, self.player, method)
         self.deaths += 1
@@ -73,6 +76,9 @@ class Game():
             return
         self.players[player.id] = player
         self.stat_table[player.id] = StatTable(player)
+
+    def add_final_score(self, player_id, score):
+        self.stat_table[player_id].score = score
 
     def add_kill(self, killer_id, victum_id, method):
         killer = self.players[killer_id]

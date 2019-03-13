@@ -13,6 +13,7 @@ def parse_end_game(game, line):
     return game
 
 
+
 def parse_player_added(game, line):
     split_lines = line.split(" ")
     # is bot check. Add to the game but mark as bot
@@ -23,12 +24,19 @@ def parse_player_added(game, line):
     # player_id = split_lines[1]
     player = Player(player_name, is_bot)
 
+    game.add_player_connecting(player)
+
 
 def parse_game_done(game, line):
     # game is done, players don't get moved to disconnecting anymore
     game.done = True
 
-    game.add_player(player)
+
+def parse_final_score(game, line):
+    parts = line.split(" ")
+    score = parts[1]
+    player_id = parts[7]
+    game.add_final_score(player_id, score)
 
 
 def parse_kill(game, line):
