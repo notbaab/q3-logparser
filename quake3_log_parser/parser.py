@@ -11,7 +11,8 @@ class LineType(Enum):
     PLAYER_INFO = "ClientUserinfoChanged:"
     KILL = "Kill:"
     ITEM = "Item:"
-    GAME_DONE = "ShutdownGame:"
+    GAME_DONE = "Exit:"
+    GAME_SHUTDOWN = "ShutdownGame:"
 
 
 # generic parsing functions that take a line and the current game being played
@@ -44,7 +45,7 @@ def parse_lines(log_input):
             current_game = Game(game_data["mapname"])
             games.append(current_game)
         # I'm not sure if we need to detect a game is done
-        elif linetype == LineType.GAME_DONE:
+        elif linetype == LineType.GAME_SHUTDOWN:
             current_game = None
         else:
             parse_functions[linetype](current_game, line)
