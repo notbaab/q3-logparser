@@ -63,6 +63,7 @@ class Game():
         self.stat_table = {}
         self.map_name = map_name
         self.add_player(Player(WORLDID, False))
+        self.done = False
 
     def add_player(self, player):
         # This can happen when a player disconnects and then reconnects. How

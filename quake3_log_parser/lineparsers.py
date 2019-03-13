@@ -23,6 +23,11 @@ def parse_player_added(game, line):
     # player_id = split_lines[1]
     player = Player(player_name, is_bot)
 
+
+def parse_game_done(game, line):
+    # game is done, players don't get moved to disconnecting anymore
+    game.done = True
+
     game.add_player(player)
 
 
