@@ -3,12 +3,13 @@ import sys
 from .lineparsers import *
 from .datastructures import *
 from enum import Enum
-from pprint import pprint
 
 
 class LineType(Enum):
     INIT_GAME = "InitGame:"
     PLAYER_INFO = "ClientUserinfoChanged:"
+    # PLAYER_CONNECTED = "ClientBegin:"
+    PLAYER_DISCONNECTED = "ClientDisconnect:"
     KILL = "Kill:"
     SCORE = "score:"
     ITEM = "Item:"
@@ -19,8 +20,10 @@ class LineType(Enum):
 # generic parsing functions that take a line and the current game being played
 parse_functions = {
     LineType.PLAYER_INFO: parse_player_added,
+    # LineType.PLAYER_CONNECTED: parse_player_connected,
     LineType.SCORE: parse_final_score,
     LineType.GAME_DONE: parse_game_done,
+    LineType.PLAYER_DISCONNECTED: parse_player_disconnected,
     LineType.KILL: parse_kill,
     LineType.ITEM: parse_item,
 }

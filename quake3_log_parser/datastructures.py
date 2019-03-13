@@ -1,5 +1,6 @@
 # holds the kill info about the given player
-WORLDID = '<world>'
+WORLDNAME = '<world>'
+WORLDID = "1022"
 
 
 class Kill():
@@ -56,29 +57,49 @@ class StatTable():
             victum = kills[0].victum
             line = "{} {}\n".format(victum.name, total)
             stat += line
+
+        stat += "Deaths\n"
+        for deaths in self.death_by_player.values():
+            total = len(deaths)
+            killer = deaths[0].killer
+            line = "{} {}\n".format(killer.name, total)
+            stat += line
         return stat
 
 
 class Game():
     def __init__(self, map_name):
+        # hash of players that have been fully connected
         self.players = {}
+        # list of players that disconnected
+        self.disconnected_player_stat_table = []
         # add the world since it can kill anyone
         self.stat_table = {}
-        self.map_name = map_name
-        self.add_player(Player(WORLDID, False))
-        self.done = False
 
-    def add_player(self, player):
+        self.map_name = map_name
+        self.done = False
+        self.add_player_connecting(Player(WORLDNAME, WORLDID, False))
+
+    def add_player_connecting(self, player):
         # This can happen when a player disconnects and then reconnects. How
         # should we handle this?. Should we count them as new
         # players?
-        if player.id in self.players:
-            return
         self.players[player.id] = player
         self.stat_table[player.id] = StatTable(player)
 
     def add_final_score(self, player_id, score):
         self.stat_table[player_id].score = score
+
+    def player_disconnected(self, player_id):
+        # Is it the games responsibilty to not do this when it's done? I'm not
+        # sure
+        if self.done:
+            return
+
+        t = self.stat_table[player_id]
+        self.disconnected_player_stat_table.append(t)
+        del self.players[player_id]
+        del self.stat_table[player_id]
 
     def add_kill(self, killer_id, victum_id, method):
         killer = self.players[killer_id]
@@ -88,8 +109,12 @@ class Game():
 
     def print_summary(self):
         for table in self.stat_table.values():
-            print(table.player.name + " " + str(table.score) + " kills " + str(table.total_kills))
-        print()
+            print(table.player.name + " " + str(table.score) + " kills " +
+                  str(table.total_kills))
+
+        for table in self.disconnected_player_stat_table:
+            print("|X|" + table.player.name + " " + str(table.score) + " kills " +
+                  str(table.total_kills))
 
     def __str__(self):
         out = ""
@@ -99,7 +124,7 @@ class Game():
 
 
 class Player():
-    def __init__(self, name, is_bot):
+    def __init__(self, name, id, is_bot):
         self.name = name
-        self.id = name
+        self.id = id
         self.is_bot = is_bot
