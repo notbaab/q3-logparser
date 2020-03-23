@@ -1,7 +1,28 @@
-from .datastructures import *
 import re
+from .datastructures import Player
+from enum import Enum
 
 kill_regex = re.compile(r":(.+): (.+) killed (.+) by (\w+)")
+
+
+class LineType(Enum):
+    INIT_GAME = "InitGame:"
+    PLAYER_INFO = "ClientUserinfoChanged:"
+    # PLAYER_CONNECTED = "ClientBegin:"
+    PLAYER_DISCONNECTED = "ClientDisconnect:"
+    KILL = "Kill:"
+    SCORE = "score:"
+    ITEM = "Item:"
+    GAME_DONE = "Exit:"
+    GAME_SHUTDOWN = "ShutdownGame:"
+
+
+def get_line_type(line):
+    for linetype in LineType:
+        if line.startswith(linetype.value):
+            return linetype
+    # print("nothing found for ", line, end="")
+    return None
 
 
 def parse_start_game(line):
@@ -9,24 +30,7 @@ def parse_start_game(line):
     return dict(zip(split_lines[::2], split_lines[1::2]))
 
 
-def parse_end_game(game, line):
-    return game
-
-
-def parse_player_connected(game, line):
-    return game
-
-
-def parse_player_disconnected(game, line):
-    # if the game is done, players shouldn't be moved to disconnecting
-    if game.done:
-        return
-    player_id = line.split(":")[1].strip()
-    game.player_disconnected(player_id)
-    return game
-
-
-def parse_player_added(game, line):
+def parse_player_added(line):
     split_lines = line.split(" ")
     # is bot check. Add to the game but mark as bot
     is_bot = "skill" in line
@@ -35,29 +39,36 @@ def parse_player_added(game, line):
     player_name = split_lines[2].split("\\")[1]
     # player_id = split_lines[1]
     player = Player(player_name, player_id, is_bot)
-
-    game.add_player_connecting(player)
-
-
-def parse_game_done(game, line):
-    # game is done, players don't get moved to disconnecting anymore
-    game.done = True
+    return player
 
 
-def parse_final_score(game, line):
+def parse_player_disconnected(line):
+    # returns the player id that is disconnecting
+    player_id = line.split(":")[1].strip()
+    return player_id
+
+
+def parse_game_done(line):
+    # game is done, get the reason for the end
+    reason = line.split(":")[1].strip()
+    return reason
+
+
+def parse_final_score(line):
     parts = line.split(" ")
     score = parts[1]
     player_id = parts[7]
-    game.add_final_score(player_id, score)
+    return player_id, score
 
 
-def parse_kill(game, line):
+def parse_kill(line):
     # this one works when the players id doesn't change. unfortunately that
-    # isn't a guarantee.
+    # isn't a guarantee. Use with the track functions and the game
+    # object to correlate with whoever the current holder of that
+    # id is
     killer, victum, method = line.split(":")[1].strip().split()
-    # _, killer, victum, method = kill_regex.search(line).groups(1)
-    game.add_kill(killer, victum, method)
+    return killer, victum, method
 
 
-def parse_item(game, line):
-    return game
+def parse_item(line):
+    player_id, item = line.split(":")[1].strip().split()

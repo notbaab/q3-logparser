@@ -75,6 +75,7 @@ class Game():
         self.disconnected_player_stat_table = []
         # add the world since it can kill anyone
         self.stat_table = {}
+        self.done_reason = None
 
         self.map_name = map_name
         self.done = False
@@ -91,7 +92,7 @@ class Game():
         self.stat_table[player_id].score = score
 
     def player_disconnected(self, player_id):
-        # Is it the games responsibilty to not do this when it's done? I'm not
+        # Is it the games responsibility to not do this when it's done? I'm not
         # sure
         if self.done:
             return

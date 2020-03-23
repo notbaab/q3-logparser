@@ -1,40 +1,8 @@
 import argparse
 import sys
 from .lineparsers import *
+from .tracker import track_functions
 from .datastructures import *
-from enum import Enum
-
-
-class LineType(Enum):
-    INIT_GAME = "InitGame:"
-    PLAYER_INFO = "ClientUserinfoChanged:"
-    # PLAYER_CONNECTED = "ClientBegin:"
-    PLAYER_DISCONNECTED = "ClientDisconnect:"
-    KILL = "Kill:"
-    SCORE = "score:"
-    ITEM = "Item:"
-    GAME_DONE = "Exit:"
-    GAME_SHUTDOWN = "ShutdownGame:"
-
-
-# generic parsing functions that take a line and the current game being played
-parse_functions = {
-    LineType.PLAYER_INFO: parse_player_added,
-    # LineType.PLAYER_CONNECTED: parse_player_connected,
-    LineType.SCORE: parse_final_score,
-    LineType.GAME_DONE: parse_game_done,
-    LineType.PLAYER_DISCONNECTED: parse_player_disconnected,
-    LineType.KILL: parse_kill,
-    LineType.ITEM: parse_item,
-}
-
-
-def get_line_type(line):
-    for linetype in LineType:
-        if line.startswith(linetype.value):
-            return linetype
-
-    return None
 
 
 def parse_lines(log_input):
@@ -54,9 +22,10 @@ def parse_lines(log_input):
         elif linetype == LineType.GAME_SHUTDOWN:
             current_game = None
         else:
-            parse_functions[linetype](current_game, line)
+            track_functions[linetype](current_game, line)
 
     for game in games:
+        print("=" * 80)
         game.print_summary()
 
     return games
