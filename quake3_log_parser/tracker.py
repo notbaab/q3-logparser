@@ -33,8 +33,8 @@ def track_player_disconnected(game, line):
 
 
 def track_kill(game, line):
-    killer, victum, method = parse_kill(line)
-    game.add_kill(killer, victum, method)
+    killer, victum, method, method_name = parse_kill(line)
+    game.add_kill(killer, victum, method, method_name)
 
 
 def track_item(game, line):

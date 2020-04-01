@@ -34,10 +34,8 @@ def parse_player_added(line):
     split_lines = line.split(" ")
     # is bot check. Add to the game but mark as bot
     is_bot = "skill" in line
-    # skip bots for now
     player_id = split_lines[1]
     player_name = split_lines[2].split("\\")[1]
-    # player_id = split_lines[1]
     player = Player(player_name, player_id, is_bot)
     return player
 
@@ -56,7 +54,7 @@ def parse_game_done(line):
 
 def parse_final_score(line):
     parts = line.split(" ")
-    score = parts[1]
+    score = int(parts[1])
     player_id = parts[7]
     return player_id, score
 
@@ -66,8 +64,10 @@ def parse_kill(line):
     # isn't a guarantee. Use with the track functions and the game
     # object to correlate with whoever the current holder of that
     # id is
-    killer, victum, method = line.split(":")[1].strip().split()
-    return killer, victum, method
+    _, data, human_readable = line.split(":")
+    killer, victum, method = data.strip().split()
+    method_name = human_readable.split("by")[1].strip()
+    return killer, victum, method, method_name
 
 
 def parse_item(line):
